@@ -45,19 +45,3 @@ resource "ibm_is_instance" "cp_vsi" {
     command = "sleep 30"
   }
 }
-
-data "external" "delete_custom_image" {
-  depends_on = ["ibm_is_instance.cp_vsi"]
-  program    = ["bash", "${path.module}/scripts/delete_custom_image.sh"]
-
-  query = {
-    custom_image_id      = "${data.ibm_is_image.cp_custom_image.id}"
-    ibmcloud_endpoint    = "${var.ibmcloud_endpoint}"
-    ibmcloud_svc_api_key = "${local.apikey}"
-    region               = "${data.ibm_is_region.region.name}"
-  }
-}
-
-output "delete_custom_image" {
-  value = "${lookup(data.external.delete_custom_image.result, "custom_image_id")}"
-}
